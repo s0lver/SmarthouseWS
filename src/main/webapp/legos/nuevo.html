@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Agregar nuevo lego - Smarthouse</title>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="../js/alertas.js"></script>
+    <script type="text/javascript" src="../js/sweet-alert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/sweet-alert.css">
+</head>
+<body>
+<h1>Agregar nuevo lego</h1>
+<form id="formularioDatosLego" action="/SmarthouseWS/api/legos/nuevo" method="post">
+    <fieldset>
+        <legend>Datos del nuevo lego</legend>
+        <label for="ddlTipoLego">Tipo lego:</label>
+        <select id="ddlTipoLego" name="ddlTipoLego">
+        </select>
+        <br><br>
+        <label for="mac">Puerto COM:</label>
+        <input type="text" name="mac" id="mac" value="" placeholder="Puerto COM" />
+        <br><br>
+        <a href="#" id="btnAgregarLego">Agregar lego</a>
+        <a href="#" id="btnLimpiarFormulario">Limpiar</a>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var urlTiposLego = "/SmarthouseWS/api/tiposLego/todos";
+
+        /*$("#ddlTipoLego").append("<option value = 0>Todos</option>");*/
+        $.getJSON(urlTiposLego, function (tiposLego) {
+            $.each(tiposLego, function (index, tipoLego) {
+                $("#ddlTipoLego").append("<option value = " + tipoLego.id + ">" + tipoLego.descripcion + "</option>");
+            })
+        });
+
+        var frm = $('#formularioDatosLego');
+        frm.submit(function (ev) {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    alerta('Lego agregado correctamente', "success");
+                },
+                error: function(jqXHR, textoEstatus, errorLanzado){
+                    alerta("Ocurrió un error al procesar en el servidor", "error");
+                }
+            });
+            ev.preventDefault();
+        });
+
+        $("#btnAgregarLego").on("click", function () {
+            $('#formularioDatosLego').submit();
+        });
+
+        $("#btnLimpiarFormulario").on("click", function () {
+            $("#formularioDatosLego")[0].reset()
+        });
+    });
+</script>
+<br>
+<a href="legos.html">Atrás</a>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Eventos - Smarthouse</title>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="../js/alertas.js"></script>
+    <script type="text/javascript" src="../js/sweet-alert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/sweet-alert.css">
+</head>
+<body>
+<h1>Eventos en el sistema</h1>
+<div id="selectorTipoReporte">
+    <fieldset>
+        <legend>Tipo de reporte:</legend>
+        <div id="porLego">
+            <input type="radio" name="tipoReporte" value="lego" id="rdPorLego">
+            <label for="rdPorLego">Eventos por lego</label>
+            <br>
+            <label for="ddlLego">Lego:</label>
+            <select id="ddlLego">
+            </select>
+        </div>
+<br>
+
+        <div id="porTipoLego">
+            <input type="radio" name="tipoReporte" value="tipoLego" id="rdPorTipoLego">
+            <label for="rdPorTipoLego">Eventos por tipo lego</label>
+            <br>
+            <label for="ddlTipoLego">Tipo lego:</label>
+            <select id="ddlTipoLego">
+            </select>
+        </div>
+    </fieldset>
+</div>
+<div id="selectorFechas">
+    <fieldset>
+        <legend>Selector de fechas</legend>
+        <input type="checkbox" name="chkFechaInicio" id="chkFechaInicio">
+        <label for="chkFechaInicio">Fecha de inicio:</label>
+        <input type="date" name="fechaInicio" id="dpFechaInicio" placeholder="dd/mm/aaaa">
+        <br>
+
+        <input type="checkbox" name="chkFechaFin" id="chkFechaFin">
+        <label for="chkFechaFin">Fecha de fin:</label>
+        <input type="date" name="fechaFin" id="dpFechaFin">
+    </fieldset>
+
+</div>
+<div id="divResultados" style="display: none">
+    <fieldset id="fieldsetResultados">
+        <legend>Resultados</legend>
+        <table id="tablaResultados">
+            <tr>
+                <th>#</th>
+                <th>ID</th>
+                <th>ID Lego</th>
+                <th>Tipo lego</th>
+                <th>Recurso</th>
+                <th>Sentido</th>
+                <th>Fecha</th>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+<script type="text/javascript">
+    var urlLegos = "/SmarthouseWS/api/legos/todos";
+
+    var urlTiposLego = "/SmarthouseWS/api/tiposLego/todos";
+
+    $(document).ready(function(){
+        $("#ddlLego").append("<option value = 0>Todos</option>");
+        $("#ddlTipoLego").append("<option value = 0>Todos</option>");
+        $.getJSON(urlLegos, function (legos) {
+            $.each(legos, function (index, lego) {
+                $("#ddlLego").append("<option value = " + lego.id + ">" + lego.id + " - " + lego.tipo + " - " + lego.mac + "</option>");
+            })
+        });
+
+        $.getJSON(urlTiposLego, function (tiposLego) {
+            $.each(tiposLego, function (index, tipoLego) {
+                $("#ddlTipoLego").append("<option value = " + tipoLego.id + ">" + tipoLego.descripcion + "</option>");
+            })
+        });
+
+        $("#generarReporte").on("click", function () {
+            var urlDestino = "/SmarthouseWS/api/eventos/";
+            var porLegoSeleccionado = $("#rdPorLego").is(":checked");
+            var porTipoLegoSeleccionado = $("#rdPorTipoLego").is(":checked");
+
+            var fechaInicio = $("#dpFechaInicio").val();
+            var fechaFin = $("#dpFechaFin").val();
+
+            var fechaInicioSeleccionado = $("#chkFechaInicio").is(":checked");
+            var fechaFinSeleccionado = $("#chkFechaFin").is(":checked");
+
+            if (validarSeleccionTipoReporte(porLegoSeleccionado, porTipoLegoSeleccionado) != true)
+                return;
+
+            if (validarFechas(fechaInicioSeleccionado, fechaInicio, fechaFinSeleccionado, fechaFin) != true){
+                return;
+            }
+
+            var idLego = $("#ddlLego").val();
+            var idTipoLego = $("#ddlTipoLego").val();
+
+            if (porLegoSeleccionado == true && idLego == 0){
+                urlDestino += "todos";
+            }
+            else if (porLegoSeleccionado == true){
+                urlDestino += "porLego/" + idLego;
+            }
+            else if (porTipoLegoSeleccionado == true && idTipoLego == 0){
+                urlDestino += "todos";
+            }
+            else if (porTipoLegoSeleccionado == true){
+                urlDestino += "porTipoLego/" + idTipoLego;
+            }
+
+            if(fechaInicioSeleccionado == true && fechaFinSeleccionado == true){
+                urlDestino += "?fechaInicio=" + fechaInicio + "&fechaFin=" + fechaFin;
+            }else if (fechaInicioSeleccionado == false && fechaFinSeleccionado == true){
+                urlDestino += "?fechaFin=" + fechaFin;
+            }
+            else if (fechaInicioSeleccionado == true && fechaFinSeleccionado == false) {
+                urlDestino += "?fechaInicio=" + fechaInicio;
+            }
+
+            $.getJSON(urlDestino, function (eventos) {
+                $("#tablaResultados").find("tr:gt(0)").remove();
+                $.each(eventos, function (index, evento) {
+                    $("#tablaResultados").find('tbody')
+                            .append($("<tr>")
+                                    .append($("<td>").text(index+1))
+                                    .append($("<td>").text(evento.id))
+                                    .append($("<td>").text(evento.idLego))
+                                    .append($("<td>").text(evento.tipoLego))
+                                    .append($("<td>").text(evento.recurso))
+                                    .append($("<td>").text(evento.sentido))
+                                    .append($("<td>").text(evento.fecha))
+                            );
+                });
+
+                $("#divResultados").show("fast");
+            });
+
+        });
+
+        function validarSeleccionTipoReporte(porLegoSeleccionado, porTipoLegoSeleccionado){
+            if (porLegoSeleccionado == false && porTipoLegoSeleccionado == false){
+                alerta("Debe seleccionar un tipo", "error");
+                return false;
+            }
+            return true;
+        }
+
+        function validarFechas(fechaInicioSeleccionado, fechaInicio, fechaFinSeleccionado, fechaFin){
+            if (fechaInicioSeleccionado == true && fechaInicio == ""){
+                alerta("Debe especificar una fecha de inicio válida", "error");
+                return false;
+            }
+
+            if (fechaFinSeleccionado == true && fechaFin == ""){
+                alerta("Debe especificar una fecha de fin válida", "error");
+                return false;
+            }
+
+            if (fechaInicioSeleccionado == true && fechaFinSeleccionado == true && fechaInicio > fechaFin){
+                alerta("La fecha de fin debe ser menor a la de inicio", "error")
+                return false;
+            }
+
+            return true;
+        }
+    })
+</script>
+
+<a href="#" id="generarReporte">Generar reporte</a>
+<br>
+<a href="reportes.html">Atrás</a>
+</body>
+</html>

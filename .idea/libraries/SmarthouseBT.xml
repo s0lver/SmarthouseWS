@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SmarthouseBT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/SmarthouseBT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

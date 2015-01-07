@@ -1,0 +1,27 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="SmarthouseWS:war exploded">
+    <output-path>$PROJECT_DIR$/target/SmarthouseWS</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="SmarthouseWS" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$PROJECT_DIR$/../SmarthouseDAL/out/artifacts/SmarthouseDAL_jar/SmarthouseDAL.jar" />
+          <element id="library" level="project" name="Jersey-2.2" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/activation-1.11.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/../SmarthouseBT/out/artifacts/SmarthouseBT_jar/SmarthouseBT.jar" />
+          <element id="library" level="project" name="SmarthouseDAL" />
+          <element id="library" level="project" name="SmarthouseBT" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/javax.mail-1.5.0.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/activation-1.1.jar" />
+          <element id="file-copy" path="$PROJECT_DIR$/lib/jetty-util-6.1.25.jar" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="C:\Users\Rafael\IdeaProjects\SmarthouseWS\target/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="SmarthouseWS/web/Web" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Legos disponibles - Smarthouse</title>
+    <script type="text/javascript" src="../js/jquery-2.1.1.js"></script>
+</head>
+<body>
+<h1>Legos disponibles en el sistema</h1>
+<table id="tablaLegos">
+    <tr>
+        <th>#</th>
+        <th>Tipo</th>
+        <th>Mac</th>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    var urlLegos = "/SmarthouseWS/api/legos";
+    var urlLegosTodos = "/todos";
+
+    var urlPaginaLego = "/SmarthouseWS/legos/lego.jsp?idLego="
+    $(document).ready(function(){
+        $.getJSON(urlLegos + urlLegosTodos, function (legos) {
+            $.each(legos, function(index, lego){
+                $("#tablaLegos").append("<tr>" +
+                "<td>" + (index + 1) + "</td>" +
+                "<td>" + lego.tipo + "</td>" +
+                "<td>" + lego.mac + "</td>" +
+//                "<td><a href=" + urlPaginaLego + lego.id + ">Detalles</a>" + "</td>" +
+                "</tr>");
+            })
+        })
+    })
+</script>
+<br>
+<a href="#">Imprimir reporte</a>
+<br>
+<a href="reportes.html">Atrás</a>
+</body>
+</html>
